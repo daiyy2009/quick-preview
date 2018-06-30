@@ -1,26 +1,36 @@
 "use strict"
 import * as vscode from 'vscode';
-import PreviewManager from './PreviewManager'
+import { PreviewManager } from './PreviewManager'
 import * as Constants from './Constants'
 
 export default class Utilities {
     //returns true if an html document is open
     constructor() { };
-    checkDocumentIsHTML(showWarning: boolean): boolean {
+    static checkDocumentIsHTML(showWarning: boolean): boolean {
         let result = vscode.window.activeTextEditor.document.languageId.toLowerCase() === "html"
         if (!result && showWarning) {
             vscode.window.showInformationMessage(Constants.ErrorMessages.NO_HTML);
         }
         return result;
     }
-    init(viewColumn: number, context: vscode.ExtensionContext, previewUri: vscode.Uri) {
-        let proceed = this.checkDocumentIsHTML(true);
-        if (proceed) {
-            let previewManager = new PreviewManager();
-            let registration = vscode.workspace.registerTextDocumentContentProvider('HTMLPreview', previewManager.htmlDocumentContentProvider);
-            return vscode.commands.executeCommand('vscode.previewHtml', previewUri, viewColumn).then((success) => {
-            });
-        }
+
+    static checkDocumentIs(languageId: string): boolean {
+        return vscode.window.activeTextEditor && vscode.window.activeTextEditor.document.languageId.toLowerCase() === languageId;
     }
 
+    static init(viewColumn: number, context: vscode.ExtensionContext, previewUri: vscode.Uri) {
+        let proceed = this.checkDocumentIsHTML(true);
+        if (proceed) {
+            let registration = vscode.workspace.registerTextDocumentContentProvider('HTMLPreview', PreviewManager.htmlDocumentContentProvider);
+            return vscode.commands.executeCommand('vscode.previewHtml', previewUri, viewColumn, 'Preview').then((success) => {
+                // register on js file content change event
+                console.log('[quick preview] preview html success!')
+                // vscode.window.onDidChangeTextEditorSelection((e: vscode.TextEditorSelectionChangeEvent) => {
+
+                // });
+                // vscode.window.onDidChangeActiveTextEditor(PreviewManager.onChangeActiveEditor);
+            });
+
+        }
+    }
 }

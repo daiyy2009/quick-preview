@@ -10,6 +10,6 @@ export module ExtensionConstants{
     export const PREVIEW_URI = "HTMLPreview://authority/preview";
     export const STATUS_BAR_TEXT = "Preview Available";
     export const STATUS_BAR_TOOLTIP = "Click for Side Preview";
-    export const EXTENSION_ID = "hdg.live-html-previewer";
-    export const CUSTOM_CSS_PATH = "Resources/custom_style.css"
+    export const EXTENSION_ID = "daiyy.quick-html-previewer";
+    export const CUSTOM_CSS_PATH = "resources/custom-style.css"
 }

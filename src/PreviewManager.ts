@@ -7,20 +7,19 @@ import * as Constants from './Constants'
 
 
 // This class initializes the previewmanager based on extension type and manages all the subscriptions
-export default class PreviewManager {
+class PreviewManager {
 
     htmlDocumentContentProvider: HTMLDocumentContentProvider;
     disposable: vscode.Disposable;
-    utilities: Utilities;
     statusBarItem: StatusBarItem;
 
     constructor(utilities?: Utilities, htmlDocumentContentProvider?: HTMLDocumentContentProvider) {
-        this.utilities = utilities && utilities || new Utilities();
-        this.htmlDocumentContentProvider = htmlDocumentContentProvider && htmlDocumentContentProvider || new HTMLDocumentContentProvider();
+        this.htmlDocumentContentProvider = new HTMLDocumentContentProvider();
         this.htmlDocumentContentProvider.generateHTML();
         // subscribe to selection change event
         let subscriptions: vscode.Disposable[] = [];
-        vscode.window.onDidChangeTextEditorSelection(this.onEvent, this, subscriptions)
+        vscode.window.onDidChangeTextEditorSelection(this.onChangeContent, this, subscriptions);
+        vscode.window.onDidChangeActiveTextEditor(this.onChangeActiveEditor, this);
         this.disposable = vscode.Disposable.from(...subscriptions);
     }
 
@@ -28,26 +27,24 @@ export default class PreviewManager {
         this.disposable.dispose();
     }
 
-    private onEvent() {
-        this.htmlDocumentContentProvider.update(vscode.Uri.parse(Constants.ExtensionConstants.PREVIEW_URI));
-        // this.updatePreviewStatus();
-        // console.log(Constants.SessionVariables.IS_PREVIEW_BEING_SHOWN);
+    private onChangeContent(e: vscode.TextEditorSelectionChangeEvent) {
+        if (Utilities.checkDocumentIs('javascript') || Utilities.checkDocumentIs('css')) {
+            let editorData = {
+                key: e.textEditor.document.fileName,
+                value: e.textEditor.document.getText()
+            };
+            this.htmlDocumentContentProvider.setChangedLinks(editorData);
+        }
+        this.htmlDocumentContentProvider.refresh();
     }
 
-    // updatePreviewStatus() {
-    //     let visibleEditors = vscode.window.visibleTextEditors;
-    //     console.log(visibleEditors)
-    //     for (let editor of visibleEditors) {
-    //         console.log(editor.document.uri);
-    //         console.log(vscode.Uri.parse(Constants.ExtensionConstants.PREVIEW_URI));
-    //         if (editor.document.uri === vscode.Uri.parse(Constants.ExtensionConstants.PREVIEW_URI)) {
-    //             Constants.SessionVariables.IS_PREVIEW_BEING_SHOWN = true;
-    //             return;
-    //         }
-    //     }
-    //     Constants.SessionVariables.IS_PREVIEW_BEING_SHOWN = false;
-    // }
-
-
-
+    private onChangeActiveEditor(e: vscode.TextEditor) {
+        if (Utilities.checkDocumentIs('html') && this.htmlDocumentContentProvider.getTextEditor() != e) {
+            this.htmlDocumentContentProvider.setTextEditor(e);
+            this.htmlDocumentContentProvider.refresh();
+        }
+    }
 }
+
+let _instance = new PreviewManager();
+export { _instance as PreviewManager };
