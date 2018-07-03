@@ -8,7 +8,7 @@ Lively preview your html files in VS Code itself. Use it to quickly set the html
 
 If a HTML file is open, a message is displayed on the Status Bar in bottom left. Click on it for side preview.
 #### Side preview with quick editing
-![IDE](resources/images/preview.gif)
+![IDE](https://raw.githubusercontent.com/daiyy2009/quick-preview/master/resources/images/preview.gif)
 
 ### github
 https://github.com/daiyy2009/quick-preview/
