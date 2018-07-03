@@ -2,7 +2,7 @@
     "name": "quick-html-previewer",
     "displayName": "Quick HTML Previewer",
     "description": "Edit and preview HTML documents in VS Code",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "publisher": "daiyy",
     "author": "Daiyy",
     "engines": {
