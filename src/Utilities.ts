@@ -22,15 +22,9 @@ export default class Utilities {
         let proceed = this.checkDocumentIsHTML(true);
         if (proceed) {
             let registration = vscode.workspace.registerTextDocumentContentProvider('HTMLPreview', PreviewManager.htmlDocumentContentProvider);
-            return vscode.commands.executeCommand('vscode.previewHtml', previewUri, viewColumn, 'Preview').then((success) => {
-                // register on js file content change event
+            return vscode.commands.executeCommand('vscode.previewHtml', previewUri, viewColumn, 'Preview').then(() => {
                 console.log('[quick preview] preview html success!')
-                // vscode.window.onDidChangeTextEditorSelection((e: vscode.TextEditorSelectionChangeEvent) => {
-
-                // });
-                // vscode.window.onDidChangeActiveTextEditor(PreviewManager.onChangeActiveEditor);
             });
-
         }
     }
 }

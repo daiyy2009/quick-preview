@@ -7,7 +7,7 @@ export default class StatusBarItem {
 
     statusBarItem: vscode.StatusBarItem;
 
-    constructor(utilities?: Utilities) {
+    constructor() {
         this.statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
         this.statusBarItem.command = "extension.sidePreview";
         this.statusBarItem.tooltip = Constants.ExtensionConstants.STATUS_BAR_TOOLTIP;
