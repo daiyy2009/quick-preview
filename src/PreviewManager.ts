@@ -12,16 +12,9 @@ class PreviewManager {
 
     constructor() {
         this.htmlDocumentContentProvider = new HTMLDocumentContentProvider();
-        this.htmlDocumentContentProvider.generateHTML();
-        // subscribe to selection change event
-        let subscriptions: vscode.Disposable[] = [];
-        vscode.workspace.onDidChangeTextDocument(this.onChangeTextContent, this, subscriptions);
-        vscode.window.onDidChangeActiveTextEditor(this.onChangeActiveEditor, this, subscriptions);
-        this.disposable = vscode.Disposable.from(...subscriptions);
-    }
-
-    dispose() {
-        this.disposable.dispose();
+        
+        vscode.workspace.onDidChangeTextDocument(this.onChangeTextContent, this);
+        vscode.window.onDidChangeActiveTextEditor(this.onChangeActiveEditor, this);
     }
 
     private onChangeTextContent(e: vscode.TextDocumentChangeEvent) {

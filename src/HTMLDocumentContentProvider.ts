@@ -12,12 +12,10 @@ const ATTRS = ['src', 'href'];
  */
 export default class HTMLDocumentContentProvider implements vscode.TextDocumentContentProvider {
 
-    private _onDidChange: vscode.EventEmitter<vscode.Uri>;
     private _textEditor: vscode.TextEditor;
     private _changedLinks = new Map<string, string>();
 
     constructor() {
-        this._onDidChange = new vscode.EventEmitter<vscode.Uri>();
         this._textEditor = vscode.window.activeTextEditor;
     }
 
@@ -36,6 +34,7 @@ export default class HTMLDocumentContentProvider implements vscode.TextDocumentC
     // Thanks to Thomas Haakon Townsend for coming up with this regex
     private fixLinks(html: string): string {
         let documentFileName = this._textEditor.document.fileName;
+        // return html;
         return html.replace(
             new RegExp(`((?:${ATTRS.join('|')})=[\'\"])((?!http|\\/).*?)([\'\"])`, "gmi"),
             (subString: string, p1: string, p2: string, p3: string): string => {
@@ -57,7 +56,7 @@ export default class HTMLDocumentContentProvider implements vscode.TextDocumentC
                         vscode.Uri.file(path.join(
                             path.dirname(documentFileName),
                             p2
-                        )),
+                        )).with({ scheme: 'vscode-resource' }),
                         p3
                     ].join("");
                 }
@@ -67,7 +66,6 @@ export default class HTMLDocumentContentProvider implements vscode.TextDocumentC
 
     private addChangedLinkContent(content: string): string {
         const $ = cheerio.load(content);
-        const supportAttrs = ['src', 'href']
         ATTRS.forEach((value) => {
             let linkAttr = `${PREFIX_LINK}-${value}`;
             let $changedLink = $(`[${linkAttr}]`);
@@ -107,11 +105,7 @@ export default class HTMLDocumentContentProvider implements vscode.TextDocumentC
     private addStyles(html: string): string {
         let extensionPath = vscode.extensions.getExtension(Constants.ExtensionConstants.EXTENSION_ID).extensionPath;
         let style_path = vscode.Uri.file(`${extensionPath}/${Constants.ExtensionConstants.CUSTOM_CSS_PATH}`);
-        let styles: string = `<link href="${style_path}" rel="stylesheet" />`;
+        let styles: string = `<link href="${style_path.with({ scheme: 'vscode-resource' })}" rel="stylesheet" />`;
         return html + styles;
-    }
-
-    get onDidChange(): vscode.Event<vscode.Uri> {
-        return this._onDidChange.event;
     }
 }

@@ -6,7 +6,6 @@ import * as Constants from './Constants'
 export default class Utilities {
     private static panel ;
     //returns true if an html document is open
-    constructor() { };
     static checkDocumentIsHTML(showWarning: boolean): boolean {
         let result = vscode.window.activeTextEditor.document.languageId.toLowerCase() === "html"
         if (!result && showWarning) {
@@ -22,8 +21,6 @@ export default class Utilities {
     static init(viewColumn: number, context: vscode.ExtensionContext, previewUri: vscode.Uri) {
         let proceed = this.checkDocumentIsHTML(true);
         if (proceed) {
-            let registration = vscode.workspace.registerTextDocumentContentProvider('HTMLPreview', PreviewManager.htmlDocumentContentProvider);
-
             if(!Utilities.panel) {                
                 Utilities.panel = vscode.window.createWebviewPanel(
                     'quickHTMLPreview',
@@ -33,8 +30,10 @@ export default class Utilities {
                         enableScripts: true
                     }
                 );
+                Utilities.panel.onDidDispose(()=>{
+                    Utilities.panel = null;
+                })
             }
-
             Utilities.refreshContent();
         }
     }
