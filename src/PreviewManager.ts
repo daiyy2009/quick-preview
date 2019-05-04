@@ -2,7 +2,6 @@
 import * as vscode from 'vscode';
 import HTMLDocumentContentProvider from './HTMLDocumentContentProvider';
 import Utilities from './Utilities';
-import StatusBarItem from './StatusBarItem';
 
 
 // This class initializes the previewmanager based on extension type and manages all the subscriptions
@@ -10,7 +9,6 @@ class PreviewManager {
 
     htmlDocumentContentProvider: HTMLDocumentContentProvider;
     disposable: vscode.Disposable;
-    statusBarItem: StatusBarItem;
 
     constructor() {
         this.htmlDocumentContentProvider = new HTMLDocumentContentProvider();
@@ -34,13 +32,15 @@ class PreviewManager {
             };
             this.htmlDocumentContentProvider.setChangedLinks(editorData);
         }
-        this.htmlDocumentContentProvider.refresh();
+
+        Utilities.refreshContent();
     }
 
     private onChangeActiveEditor(e: vscode.TextEditor) {
         if (Utilities.checkDocumentIs('html') && this.htmlDocumentContentProvider.getTextEditor() != e) {
             this.htmlDocumentContentProvider.setTextEditor(e);
-            this.htmlDocumentContentProvider.refresh();
+
+            Utilities.refreshContent();
         }
     }
 }

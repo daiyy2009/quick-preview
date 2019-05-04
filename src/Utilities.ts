@@ -4,6 +4,7 @@ import { PreviewManager } from './PreviewManager'
 import * as Constants from './Constants'
 
 export default class Utilities {
+    private static panel ;
     //returns true if an html document is open
     constructor() { };
     static checkDocumentIsHTML(showWarning: boolean): boolean {
@@ -22,9 +23,23 @@ export default class Utilities {
         let proceed = this.checkDocumentIsHTML(true);
         if (proceed) {
             let registration = vscode.workspace.registerTextDocumentContentProvider('HTMLPreview', PreviewManager.htmlDocumentContentProvider);
-            return vscode.commands.executeCommand('vscode.previewHtml', previewUri, viewColumn, 'Preview').then(() => {
-                console.log('[quick preview] preview html success!')
-            });
+
+            if(!Utilities.panel) {                
+                Utilities.panel = vscode.window.createWebviewPanel(
+                    'quickHTMLPreview',
+                    'Preview',
+                    viewColumn,
+                    { 
+                        enableScripts: true
+                    }
+                );
+            }
+
+            Utilities.refreshContent();
         }
+    }
+
+    static refreshContent() {
+        Utilities.panel.webview.html = PreviewManager.htmlDocumentContentProvider.generateHTML()
     }
 }

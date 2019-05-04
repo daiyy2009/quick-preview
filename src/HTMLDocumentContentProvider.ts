@@ -87,10 +87,6 @@ export default class HTMLDocumentContentProvider implements vscode.TextDocumentC
         return $.html();
     }
 
-    public refresh() {
-        this._onDidChange.fire(vscode.Uri.parse(Constants.ExtensionConstants.PREVIEW_URI));
-    }
-
     setChangedLinks({ key, value }) {
         this._changedLinks.set(key, value);
     }
