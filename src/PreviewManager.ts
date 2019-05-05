@@ -30,7 +30,7 @@ class PreviewManager {
     }
 
     private onChangeActiveEditor(e: vscode.TextEditor) {
-        if (Utilities.checkDocumentIs('html') && this.htmlDocumentContentProvider.getTextEditor() != e) {
+        if ((Utilities.checkDocumentIs('html') || Utilities.checkDocumentIs('xhtml')) && this.htmlDocumentContentProvider.getTextEditor() != e) {
             this.htmlDocumentContentProvider.setTextEditor(e);
 
             Utilities.refreshContent();
