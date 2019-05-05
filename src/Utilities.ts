@@ -7,7 +7,8 @@ export default class Utilities {
     private static panel ;
     //returns true if an html document is open
     static checkDocumentIsHTML(showWarning: boolean): boolean {
-        let result = vscode.window.activeTextEditor.document.languageId.toLowerCase() === "html"
+        const languageId = vscode.window.activeTextEditor.document.languageId.toLowerCase()
+        let result = (languageId === "html" || languageId === "xhtml")
         if (!result && showWarning) {
             vscode.window.showInformationMessage(Constants.ErrorMessages.NO_HTML);
         }
