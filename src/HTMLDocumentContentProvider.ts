@@ -106,6 +106,6 @@ export default class HTMLDocumentContentProvider implements vscode.TextDocumentC
         let extensionPath = vscode.extensions.getExtension(Constants.ExtensionConstants.EXTENSION_ID).extensionPath;
         let style_path = vscode.Uri.file(`${extensionPath}/${Constants.ExtensionConstants.CUSTOM_CSS_PATH}`);
         let styles: string = `<link href="${style_path.with({ scheme: 'vscode-resource' })}" rel="stylesheet" />`;
-        return html + styles;
+        return styles + html;
     }
 }
