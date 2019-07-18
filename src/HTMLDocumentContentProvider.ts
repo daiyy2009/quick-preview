@@ -116,12 +116,12 @@ export default class HTMLDocumentContentProvider implements vscode.TextDocumentC
     }
 
     private replaceUrlHandler(subString: string, p1: string, hostFilePath: string): string {
-        if(p1.startsWith(`'`) && p1.endsWith(`'`) || p1.startsWith(`"`) && p1.endsWith(`"`)){
+        if (p1.startsWith(`'`) && p1.endsWith(`'`) || p1.startsWith(`"`) && p1.endsWith(`"`)) {
             p1 = p1.substring(1, p1.length - 1)
         }
         const vscodePath = this.getVscodeResourcePath(p1, hostFilePath)
         return subString.replace(p1, vscodePath)
-      }
+    }
 
     private getVscodeResourcePath(relativePath: string, hostFilePath: string): string {
         return vscode.Uri.file(path.join(
