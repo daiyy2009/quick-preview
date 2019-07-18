@@ -26,20 +26,23 @@ export default class HTMLDocumentContentProvider implements vscode.TextDocumentC
     public generateHTML(): string {
         let plainText: string = this._textEditor.document.getText();
         let html = this.fixLinks(plainText);
+        // translate url in style tag
+        html = this.replaceUrlToVscodeResource(html, this._textEditor.document.fileName)
         let changedHtmlContent = this.addChangedLinkContent(html);
         let htmlWithStyle = this.addStyles(changedHtmlContent);
+
         return htmlWithStyle;
     }
 
     // Thanks to Thomas Haakon Townsend for coming up with this regex
     private fixLinks(html: string): string {
-        let documentFileName = this._textEditor.document.fileName;
+        let htmlFilePath = this._textEditor.document.fileName;
         // return html;
         return html.replace(
             new RegExp(`((?:${ATTRS.join('|')})=[\'\"])((?!http|\\/).*?)([\'\"])`, "gmi"),
             (subString: string, p1: string, p2: string, p3: string): string => {
                 let fsPath = vscode.Uri.file(path.join(
-                    path.dirname(documentFileName),
+                    path.dirname(htmlFilePath),
                     p2
                 )).fsPath;
 
@@ -53,10 +56,7 @@ export default class HTMLDocumentContentProvider implements vscode.TextDocumentC
                 } else {
                     return [
                         p1,
-                        vscode.Uri.file(path.join(
-                            path.dirname(documentFileName),
-                            p2
-                        )).with({ scheme: 'vscode-resource' }),
+                        this.getVscodeResourcePath(p2, htmlFilePath),
                         p3
                     ].join("");
                 }
@@ -86,6 +86,8 @@ export default class HTMLDocumentContentProvider implements vscode.TextDocumentC
     }
 
     setChangedLinks({ key, value }) {
+        // translate image url as `url(./img/bg.png)`
+        value = this.replaceUrlToVscodeResource(value, key)
         this._changedLinks.set(key, value);
     }
 
@@ -107,5 +109,24 @@ export default class HTMLDocumentContentProvider implements vscode.TextDocumentC
         let style_path = vscode.Uri.file(`${extensionPath}/${Constants.ExtensionConstants.CUSTOM_CSS_PATH}`);
         let styles: string = `<link href="${style_path.with({ scheme: 'vscode-resource' })}" rel="stylesheet" />`;
         return styles + html;
+    }
+
+    private replaceUrlToVscodeResource(content: string, hostFilePath: string): string {
+        return content.replace(/url\((.*)\)/gmi, (subString, p1) => { return this.replaceUrlHandler(subString, p1, hostFilePath) })
+    }
+
+    private replaceUrlHandler(subString: string, p1: string, hostFilePath: string): string {
+        if(p1.startsWith(`'`) && p1.endsWith(`'`) || p1.startsWith(`"`) && p1.endsWith(`"`)){
+            p1 = p1.substring(1, p1.length - 1)
+        }
+        const vscodePath = this.getVscodeResourcePath(p1, hostFilePath)
+        return subString.replace(p1, vscodePath)
+      }
+
+    private getVscodeResourcePath(relativePath: string, hostFilePath: string): string {
+        return vscode.Uri.file(path.join(
+            path.dirname(hostFilePath),
+            relativePath
+        )).with({ scheme: 'vscode-resource' }).toString()
     }
 }
