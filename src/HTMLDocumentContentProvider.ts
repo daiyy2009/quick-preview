@@ -119,6 +119,9 @@ export default class HTMLDocumentContentProvider implements vscode.TextDocumentC
         if (p1.startsWith(`'`) && p1.endsWith(`'`) || p1.startsWith(`"`) && p1.endsWith(`"`)) {
             p1 = p1.substring(1, p1.length - 1)
         }
+        if (p1.startsWith('http')) {
+            return subString
+        }
         const vscodePath = this.getVscodeResourcePath(p1, hostFilePath)
         return subString.replace(p1, vscodePath)
     }
